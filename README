@@ -1,0 +1,229 @@
+# Wallet App – Gestión segura de métodos de pago
+
+Aplicación tipo **wallet** para registro de usuarios, autenticación y administración segura de métodos de pago.
+
+El proyecto fue desarrollado aplicando una **arquitectura limpia básica (Clean Architecture)** con separación por capas para mejorar mantenibilidad, escalabilidad y claridad del código.
+
+---
+
+# Funcionalidades implementadas
+
+### Autenticación
+
+- Registro de usuario
+- Inicio de sesión con JWT
+- Cierre de sesión
+- Consulta de perfil autenticado
+
+---
+
+### Métodos de pago
+
+- Alta de método de pago
+- Listado de métodos de pago del usuario autenticado
+- Consulta de detalle de un método de pago
+- Eliminación lógica (soft delete)
+- Prevención de registros duplicados
+
+---
+
+### Seguridad y trazabilidad
+
+- Hash seguro de contraseñas (`bcrypt`)
+- Hash de identificadores sensibles de métodos de pago
+- Respuesta con identificadores enmascarados (`****1234`)
+- Protección de endpoints mediante JWT
+- Registro automático de auditoría (audit logs)
+
+---
+
+# Arquitectura del proyecto
+
+Se implementó una **arquitectura limpia básica**, separando responsabilidades en distintas capas:
+
+```bash
+wallet-backend/
+├── src/
+│
+├── config/            # configuración general, DI, seguridad
+├── domain/            # entidades de dominio
+├── helpers/           # utilidades (JWT, seguridad)
+├── infrastructure/    # modelos DB, repositorios, middleware
+├── presentation/      # rutas y schemas
+├── services/          # lógica de negocio
+│
+├── main.py
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── schema.sql
+├── .env.example
+```
+
+### Separación por capas
+
+- **Presentation** → exposición de API y validación de entrada/salida
+- **Services** → lógica de negocio
+- **Repositories** → acceso a datos
+- **Domain** → entidades del sistema
+- **Infrastructure** → base de datos, middleware y configuración técnica
+
+---
+
+# Stack tecnológico
+
+## Backend
+
+- Python 3.11
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Docker
+- Pydantic
+- JWT Authentication
+
+---
+
+# Variables de entorno
+
+Crear un archivo `.env` tomando como base `.env.example`.
+
+Ejemplo:
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@db:5432/wallet_db
+SECRET_KEY=your-secret-key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+```
+
+---
+
+# Cómo levantar el proyecto
+
+## 1. Clonar repositorio
+
+```bash
+git clone <url-del-repositorio>
+cd wallet-backend
+```
+
+---
+
+## 2. Levantar contenedores
+
+```bash
+docker compose up --build
+```
+
+Esto iniciará:
+
+- API backend
+- Base de datos PostgreSQL
+
+---
+
+## 3. Acceder a la API
+
+```text
+http://localhost:8000
+```
+
+---
+
+## 4. Documentación Swagger
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+# Base de datos
+
+El esquema se crea automáticamente al iniciar la aplicación mediante SQLAlchemy.
+
+Adicionalmente se incluye el script SQL:
+
+```text
+schema.sql
+```
+
+---
+
+# Autenticación
+
+Los endpoints protegidos requieren JWT.
+
+### Flujo:
+
+1. Registrar usuario
+2. Iniciar sesión
+3. Copiar `access_token`
+4. Ir a **Authorize** en Swagger
+5. Pegar:
+
+```text
+Bearer TU_TOKEN
+```
+
+---
+
+# Endpoints principales
+
+## Auth
+
+```text
+POST /auth/register
+POST /auth/login
+```
+
+---
+
+## Usuario
+
+```text
+GET /users/me
+```
+
+---
+
+## Métodos de pago
+
+```text
+POST   /payment-methods
+GET    /payment-methods
+GET    /payment-methods/{id}
+DELETE /payment-methods/{id}
+```
+
+---
+
+## Auditoría
+
+```text
+GET /audit-logs
+```
+
+---
+
+# Consideraciones de seguridad
+
+- Contraseñas protegidas mediante hashing (`bcrypt`)
+- Identificadores sensibles almacenados de forma segura (hash)
+- Nunca se expone información sensible completa
+- Los métodos de pago solo pueden ser consultados por su propietario
+- Todas las operaciones relevantes generan trazabilidad automática
+
+---
+
+# Mejoras futuras
+
+- Pruebas automatizadas
+
+Copyright (c) 2026 David Arias
+
+All rights reserved.
+
+No permission is granted to use, copy, modify or distribute
+this software without explicit written consent from the author.
